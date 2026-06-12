@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+mediapipe>=0.10.0
+numpy
+pillow
+opencv-python-headless
+scikit-learn
+torch --index-url https://download.pytorch.org/whl/cpu
