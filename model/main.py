@@ -59,8 +59,18 @@ async def predict(file: UploadFile = File(...)):
     input_tensor = torch.tensor([landmarks], dtype=torch.float32)
     with torch.no_grad():
         output = model(input_tensor)
-
-    predicted_index = torch.argmax(output, dim=1).item()
-    predicted_label = labels[predicted_index]
-
-    return {'prediction': str(predicted_label)}
+        predicted_index = torch.argmax(output, dim=1).item()
+        predicted_label = labels[predicted_index]
+        
+    with torch.no_grad():
+        output = model(input_tensor)
+        probs = torch.softmax(output, dim=1)
+        confidence, predicted_index = torch.max(probs, dim=1)
+        
+        CONFIDENCE_THRESHOLD = 0.75
+        
+        if confidence.item() < CONFIDENCE_THRESHOLD:
+            return {'prediction': None, 'message': 'No confident sign detected', 'confidence': round(confidence.item(), 3)}
+        
+        predicted_label = labels[predicted_index.item()]
+        return {'prediction': str(predicted_label), 'confidence': round(confidence.item(), 3)}
