@@ -1,9 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Camera, CameraType, useCameraPermissions } from 'expo-camera';
+import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import axios from 'axios';
-
-const API_URL = 'http://10.20.132.237:8000/predict';
 
 export default function App() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -12,7 +10,7 @@ export default function App() {
   const [lastLetter, setLastLetter] = useState('');
   const [count, setCount] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const cameraRef = useRef<Camera | null>(null);
+  const cameraRef = useRef<CameraView | null>(null);
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | undefined;
@@ -42,27 +40,27 @@ export default function App() {
       };
       formData.append('file', fileData);
 
-      const response = await axios.post(API_URL, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      // const response = await axios.post(API_URL, formData, {
+      //   headers: { 'Content-Type': 'multipart/form-data' }
+      // });
 
-      const letter = response.data.prediction;
-      if (!letter) return;
+      // const letter = response.data.prediction;
+      // if (!letter) return;
 
-      setPrediction(letter);
+      // setPrediction(letter);
 
-      if (letter === lastLetter) {
-        const newCount = count + 1;
-        setCount(newCount);
-        if (newCount >= 3) {
-          setSentence(prev => prev + letter);
-          setCount(0);
-        }
-      } else {
-        setLastLetter(letter);
-        setCount(0);
-      }
-    } catch (err) {
+      // if (letter === lastLetter) {
+      //   const newCount = count + 1;
+      //   setCount(newCount);
+      //   if (newCount >= 3) {
+      //     setSentence(prev => prev + letter);
+      //     setCount(0);
+      //   }
+      // } else {
+      //   setLastLetter(letter);
+      //   setCount(0);
+      // }
+    } catch (err:any) {
       console.log('Error:', err.message);
     }
   };
@@ -81,7 +79,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Camera style={styles.camera} ref={cameraRef} />
+      <CameraView style={styles.camera} ref={cameraRef} />
       <View style={styles.overlay}>
         <Text style={styles.letter}>{prediction || '...'}</Text>
         <Text style={styles.sentence}>{sentence || 'Sentence yahan aayega'}</Text>
